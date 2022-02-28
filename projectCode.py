@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 """
 Created on Tue Feb  8 19:45:37 2022
-
-@author: ejo17
 """
 
 import numpy as np
@@ -11,8 +9,10 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import tensorflow as tf 
 from tensorflow import keras
+import lime
 
 from nltk.corpus import stopwords
+
 #from wordcloud import WordCloud
 import re
 
@@ -28,17 +28,25 @@ from keras.layers import Dense, Embedding, LSTM
 from keras.wrappers.scikit_learn import KerasClassifier
 from sklearn.pipeline import make_pipeline
 
+from sklearn.metrics import accuracy_score,confusion_matrix,classification_report
+
+
+from lime.lime_text import LimeTextExplainer
+
 
 import os
 
 #Creating a dataframe with pandas and reading in the csv - also choosing specific columns with (2,5)
-df = pd.read_csv('C:\\Users\\ejo17\\Desktop\\Uni work\\Year 3\\Project\\dataset.csv', header=None)
-df = df[[2,5]]
-df.columns = ['Tweet', 'Sentiment']
+df = pd.read_csv('C:\\Users\\ejo17\\Desktop\\Uni work\\Year 3\\Project\\bitcointweets.csv', header=None)
+df = df[[1,7]]
+df.columns = ['tweet', 'label']
 df.head()
 
 #Creating a plot of the sentiment column as a visual output
-sns.countplot(df['Sentiment'])
+"""sns.countplot(df['label'])"""
+
+df['text_length'] = df['tweet'].apply(len)
+df[['label','text_length','tweet']].head()
 
 def clean_text(s):
     s = re.sub(r'http\S+', '', s)
@@ -46,7 +54,7 @@ def clean_text(s):
     s = re.sub(r'@\S+', '', s)
     s = re.sub('&amp', ' ', s)
     return s
-df['clean_tweet'] = df['Tweet'].apply(clean_text)
+df['clean_tweet'] = df['tweet'].apply(clean_text)
 
 text = df['clean_tweet'].to_string().lower()    
 
@@ -56,7 +64,7 @@ X = df['clean_tweet']
 encode_cat = {"label":     {"['neutral']": 0, "['positive']": 1, "['negative']": 2},
              }
 y_df = df.replace(encode_cat)
-y = y_df['Sentiment']
+y = y_df['label']
 y.value_counts()
 
 seed = 101 # fix random seed for reproducibility
@@ -71,9 +79,10 @@ print(X_train.shape, X_test.shape, y_train.shape, y_test.shape)
 vocab_size = 20000  # Max number of different word, i.e. model input dimension
 maxlen = 80  # Max number of words kept at the end of each text
 
+
 class TextsToSequences(Tokenizer, BaseEstimator, TransformerMixin):
-    """ Sklearn transformer to convert texts to indices list 
-    (e.g. [["the cute cat"], ["the dog"]] -> [[1, 2, 3], [1, 4]])"""
+    """Sklearn transformer to convert texts to indices list 
+    (e.g. [["the cute cat"], ["the dog"]] -> [[1, 2, 3], [1, 4]]) """
     def __init__(self,  **kwargs):
         super().__init__(**kwargs)
         
@@ -87,7 +96,7 @@ class TextsToSequences(Tokenizer, BaseEstimator, TransformerMixin):
 sequencer = TextsToSequences(num_words=vocab_size)
 
 class Padder(BaseEstimator, TransformerMixin):
-    """ Pad and crop uneven lists to the same length. 
+   """ Pad and crop uneven lists to the same length. 
     Only the end of lists longernthan the maxlen attribute are
     kept, and lists shorter than maxlen are left-padded with zeros
     
@@ -99,15 +108,16 @@ class Padder(BaseEstimator, TransformerMixin):
         maximum index known by the Padder, if a higher index is met during 
         transform it is transformed to a 0
     """
-    def __init__(self, maxlen=500):
+    
+   def __init__(self, maxlen=500):
         self.maxlen = maxlen
         self.max_index = None
         
-    def fit(self, X, y=None):
+   def fit(self, X, y=None):
         self.max_index = pad_sequences(X, maxlen=self.maxlen).max()
         return self
     
-    def transform(self, X, y=None):
+   def transform(self, X, y=None):
         X = pad_sequences(X, maxlen=self.maxlen)
         X[X > self.max_index] = 0
         return X
@@ -121,7 +131,7 @@ max_features = vocab_size + 1
 tf.random.set_seed(seed)
 
 def create_model(max_features):
-    """ Model creation function: returns a compiled LSTM"""
+    """ Model creation function: returns a compiled LSTM """
     model = Sequential()
     model.add(Embedding(max_features, 128))
     model.add(LSTM(100, dropout=0.2, recurrent_dropout=0.2))
@@ -140,3 +150,48 @@ pipeline.fit(X_train, y_train);
 print('Computing predictions on test set...')
 
 y_preds = pipeline.predict(X_test)
+
+
+
+def model_evaluate(): 
+    
+    print('Test Accuracy:\t{:0.1f}%'.format(accuracy_score(y_test,y_preds)*100))
+    
+    #classification report
+    print('\n')
+    print(classification_report(y_test, y_preds))
+
+    #confusion matrix
+    confmat = confusion_matrix(y_test, y_preds)
+
+    fig, ax = plt.subplots(figsize=(4, 4))
+    ax.matshow(confmat, cmap=plt.cm.Blues, alpha=0.3)
+    for i in range(confmat.shape[0]):
+        for j in range(confmat.shape[1]):
+            ax.text(x=j, y=i, s=confmat[i, j], va='center', ha='center')
+    plt.xlabel('Predicted label')
+    plt.ylabel('True label')
+    plt.tight_layout()
+    
+    
+"""model_evaluate()"""
+
+
+idx = 15
+test_text = np.array(X_test)
+test_class = np.array(y_test)
+text_sample = test_text[idx]
+class_names = ['neutral', 'positive', 'negative']
+print(text_sample)
+print('Probability =', pipeline.predict_proba([text_sample]).round(3))
+print('True class: %s' % class_names[test_class[idx]])
+
+
+explainer = LimeTextExplainer(class_names=class_names)
+exp = explainer.explain_instance(text_sample, pipeline.predict_proba, num_features=6, top_labels=2)
+exp.show_in_notebook(text=text_sample)
+
+text_sample2 = re.sub('successful', ' ', text_sample)
+print(text_sample2)
+
+print('Probability =', pipeline.predict_proba([text_sample2]).round(3))
