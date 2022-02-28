@@ -37,16 +37,25 @@ from lime.lime_text import LimeTextExplainer
 import os
 
 #Creating a dataframe with pandas and reading in the csv - also choosing specific columns with (2,5)
-df = pd.read_csv('C:\\Users\\ejo17\\Desktop\\Uni work\\Year 3\\Project\\bitcointweets.csv', header=None)
-df = df[[1,7]]
-df.columns = ['tweet', 'label']
+#df = pd.read_csv('C:\\Users\\ejo17\\Desktop\\Uni work\\Year 3\\Project\\bitcointweets.csv', header=None)
+#df = df[[1,7]]
+#df.columns = ['tweet', 'label']
+#df.head()
+
+df = pd.read_csv('C:\\Users\\ejo17\\Desktop\\Uni work\\Year 3\\Project\\dataset.csv', header=None)
+df = df[[2,5]]
+df.columns = ['Tweet', 'Sentiment']
 df.head()
 
 #Creating a plot of the sentiment column as a visual output
-"""sns.countplot(df['label'])"""
+#sns.countplot(df['label'])
+sns.countplot(df['Sentiment'])
 
-df['text_length'] = df['tweet'].apply(len)
-df[['label','text_length','tweet']].head()
+#df['text_length'] = df['tweet'].apply(len)
+#df[['label','text_length','tweet']].head()
+
+df['text_length'] = df['Tweet'].apply(len)
+df[['Sentiment','text_length','Tweet']].head()
 
 def clean_text(s):
     s = re.sub(r'http\S+', '', s)
@@ -54,17 +63,23 @@ def clean_text(s):
     s = re.sub(r'@\S+', '', s)
     s = re.sub('&amp', ' ', s)
     return s
-df['clean_tweet'] = df['tweet'].apply(clean_text)
+
+#df['clean_tweet'] = df['tweet'].apply(clean_text)
+df['clean_tweet'] = df['Tweet'].apply(clean_text)
 
 text = df['clean_tweet'].to_string().lower()    
 
 # Encode Categorical Variable
 X = df['clean_tweet']
 # y = pd.get_dummies(df['label']).values
-encode_cat = {"label":     {"['neutral']": 0, "['positive']": 1, "['negative']": 2},
+#encode_cat = {"label":     {"['neutral']": 0, "['positive']": 1, "['negative']": 2},
+#             }
+
+encode_cat = {"Sentiment":     {"NEITHER": 0, "POSITIVE": 1, "NEGATIVE": 2},
              }
 y_df = df.replace(encode_cat)
-y = y_df['label']
+#y = y_df['label']
+y = y_df['Sentiment']
 y.value_counts()
 
 seed = 101 # fix random seed for reproducibility
@@ -174,14 +189,15 @@ def model_evaluate():
     plt.tight_layout()
     
     
-"""model_evaluate()"""
+model_evaluate()
 
 
-idx = 15
+idx = 101
 test_text = np.array(X_test)
 test_class = np.array(y_test)
 text_sample = test_text[idx]
-class_names = ['neutral', 'positive', 'negative']
+#class_names = ['neutral', 'positive', 'negative']
+class_names = ['NEITHER', 'POSITIVE', 'NEGATIVE']
 print(text_sample)
 print('Probability =', pipeline.predict_proba([text_sample]).round(3))
 print('True class: %s' % class_names[test_class[idx]])
@@ -189,9 +205,10 @@ print('True class: %s' % class_names[test_class[idx]])
 
 explainer = LimeTextExplainer(class_names=class_names)
 exp = explainer.explain_instance(text_sample, pipeline.predict_proba, num_features=6, top_labels=2)
-exp.show_in_notebook(text=text_sample)
+#outputting the explainer as a figure
+exp.as_pyplot_figure()
 
-text_sample2 = re.sub('successful', ' ', text_sample)
-print(text_sample2)
+#removing the word successful from the second sample to see the difference it makes 
+
 
 print('Probability =', pipeline.predict_proba([text_sample2]).round(3))
