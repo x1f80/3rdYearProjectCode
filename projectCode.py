@@ -36,15 +36,17 @@ from lime.lime_text import LimeTextExplainer
 
 import os
 
-#Creating a dataframe with pandas and reading in the csv - also choosing specific columns with (2,5)
+
 #df = pd.read_csv('C:\\Users\\ejo17\\Desktop\\Uni work\\Year 3\\Project\\bitcointweets.csv', header=None)
 #df = df[[1,7]]
 #df.columns = ['tweet', 'label']
 #df.head()
 
+#Creating a dataframe with pandas and reading in the csv - also choosing specific columns with [2,5]
 df = pd.read_csv('C:\\Users\\ejo17\\Desktop\\Uni work\\Year 3\\Project\\dataset.csv', header=None)
 df = df[[2,5]]
 df.columns = ['Tweet', 'Sentiment']
+#head() returns the first n rows - default 5
 df.head()
 
 #Creating a plot of the sentiment column as a visual output
@@ -75,20 +77,20 @@ X = df['clean_tweet']
 #encode_cat = {"label":     {"['neutral']": 0, "['positive']": 1, "['negative']": 2},
 #             }
 
-encode_cat = {"Sentiment":     {"NEITHER": 0, "POSITIVE": 1, "NEGATIVE": 2},
-             }
+y = pd.get_dummies(df['Sentiment']).values
+
+encode_cat = {"Sentiment":     {"'NEITHER'": 0, "'POSITIVE'": 1, "'NEGATIVE'": 2}}
 y_df = df.replace(encode_cat)
 #y = y_df['label']
 y = y_df['Sentiment']
 y.value_counts()
 
+print (y)
+
 seed = 101 # fix random seed for reproducibility
 np.random.seed(seed)
 
-X_train, X_test, y_train, y_test = train_test_split(X, y, 
-                                                    test_size=0.2,
-                                                    stratify=y,
-                                                    random_state=seed)
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, stratify=y, random_state=seed)
 print(X_train.shape, X_test.shape, y_train.shape, y_test.shape)
 
 vocab_size = 20000  # Max number of different word, i.e. model input dimension
@@ -211,4 +213,4 @@ exp.as_pyplot_figure()
 #removing the word successful from the second sample to see the difference it makes 
 
 
-print('Probability =', pipeline.predict_proba([text_sample2]).round(3))
+#print('Probability =', pipeline.predict_proba([text_sample2]).round(3))
