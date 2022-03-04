@@ -77,19 +77,17 @@ X = df['clean_tweet']
 #encode_cat = {"label":     {"['neutral']": 0, "['positive']": 1, "['negative']": 2},
 #             }
 
+#converting categorical variable into dummy values
 y = pd.get_dummies(df['Sentiment']).values
 
-print (y)
-
-encode_cat = {"Sentiment":     {"'NEITHER'": 0, "'POSITIVE'": 1, "'NEGATIVE'": 2}}
+#categorising the strings to ints and replacing them with the chosen values
+encode_cat = {"Sentiment":     {"NEITHER": 0, "POSITIVE": 1, "NEGATIVE": 2}}
 y_df = df.replace(encode_cat)
 
-#y = y_df['label']
 
+#y = y_df['label']
 y = y_df['Sentiment']
 y.value_counts()
-
-print(y)
 
 seed = 101 # fix random seed for reproducibility
 np.random.seed(seed)
@@ -112,7 +110,7 @@ class TextsToSequences(Tokenizer, BaseEstimator, TransformerMixin):
         return self
     
     def transform(self, texts, y=None):
-        return np.array(self.texts_to_sequences(texts))
+        return np.array(self.texts_to_sequences(texts), dtype=object)
         
 sequencer = TextsToSequences(num_words=vocab_size)
 
@@ -197,13 +195,12 @@ def model_evaluate():
     
 model_evaluate()
 
-
-idx = 101
+idx = 26
 test_text = np.array(X_test)
 test_class = np.array(y_test)
 text_sample = test_text[idx]
 
-print(test_class)
+
 
 #class_names = ['neutral', 'positive', 'negative']
 class_names = ['NEITHER', 'POSITIVE', 'NEGATIVE']
