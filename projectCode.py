@@ -92,6 +92,7 @@ y.value_counts()
 seed = 101 # fix random seed for reproducibility
 np.random.seed(seed)
 
+#Spltting the data into test and train sets
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, stratify=y, random_state=seed)
 print(X_train.shape, X_test.shape, y_train.shape, y_test.shape)
 
@@ -199,8 +200,6 @@ idx = 26
 test_text = np.array(X_test)
 test_class = np.array(y_test)
 text_sample = test_text[idx]
-
-
 
 #class_names = ['neutral', 'positive', 'negative']
 class_names = ['NEITHER', 'POSITIVE', 'NEGATIVE']
