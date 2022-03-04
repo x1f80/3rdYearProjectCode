@@ -196,7 +196,7 @@ def model_evaluate():
     
 model_evaluate()
 
-idx = 26
+idx = 137
 test_text = np.array(X_test)
 test_class = np.array(y_test)
 text_sample = test_text[idx]
@@ -209,8 +209,10 @@ print('True class: %s' % class_names[test_class[idx]])
 
 
 explainer = LimeTextExplainer(class_names=class_names)
-exp = explainer.explain_instance(text_sample, pipeline.predict_proba, num_features=6, top_labels=2)
+exp = explainer.explain_instance(text_sample, pipeline.predict_proba, num_features=10, top_labels=2)
 #outputting the explainer as a figure
+exp.show_in_notebook(text=text_sample)
+exp.save_to_file('lime.html')
 exp.as_pyplot_figure()
 
 #removing the word successful from the second sample to see the difference it makes 
