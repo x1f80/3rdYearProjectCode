@@ -42,10 +42,10 @@ import os
 #df.columns = ['tweet', 'label']
 #df.head()
 
-#Creating a dataframe with pandas and reading in the csv - also choosing specific columns with [2,5]
-df = pd.read_csv('C:\\Users\\ejo17\\Desktop\\Uni work\\Year 3\\Project\\dataset.csv', header=None)
-df = df[[2,5]]
-df.columns = ['Tweet', 'Sentiment']
+#Creating a dataframe with pandas and reading in the csv - also choosing specific columns with ['Tweet', 'Sentiment']
+df = pd.read_csv('C:\\Users\\ejo17\\Desktop\\Uni work\\Year 3\\Project\\dataset.csv', header=0)
+df = df[['Tweet','Sentiment']]
+
 #head() returns the first n rows - default 5
 df.head()
 
@@ -79,13 +79,17 @@ X = df['clean_tweet']
 
 y = pd.get_dummies(df['Sentiment']).values
 
+print (y)
+
 encode_cat = {"Sentiment":     {"'NEITHER'": 0, "'POSITIVE'": 1, "'NEGATIVE'": 2}}
 y_df = df.replace(encode_cat)
+
 #y = y_df['label']
+
 y = y_df['Sentiment']
 y.value_counts()
 
-print (y)
+print(y)
 
 seed = 101 # fix random seed for reproducibility
 np.random.seed(seed)
@@ -198,6 +202,9 @@ idx = 101
 test_text = np.array(X_test)
 test_class = np.array(y_test)
 text_sample = test_text[idx]
+
+print(test_class)
+
 #class_names = ['neutral', 'positive', 'negative']
 class_names = ['NEITHER', 'POSITIVE', 'NEGATIVE']
 print(text_sample)
