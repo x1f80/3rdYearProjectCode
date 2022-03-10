@@ -89,15 +89,15 @@ y_df = df.replace(encode_cat)
 y = y_df['Sentiment']
 y.value_counts()
 
-seed = 101 # fix random seed for reproducibility
+seed = 111 # fix random seed for reproducibility
 np.random.seed(seed)
 
 #Spltting the data into test and train sets
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, stratify=y, random_state=seed)
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, stratify=y, random_state=seed)
 print(X_train.shape, X_test.shape, y_train.shape, y_test.shape)
 
-vocab_size = 20000  # Max number of different word, i.e. model input dimension
-maxlen = 80  # Max number of words kept at the end of each text
+vocab_size = 30000  # Max number of different word, i.e. model input dimension
+maxlen = 100  # Max number of words kept at the end of each text
 
 
 class TextsToSequences(Tokenizer, BaseEstimator, TransformerMixin):
@@ -145,7 +145,7 @@ class Padder(BaseEstimator, TransformerMixin):
 padder = Padder(maxlen)
 
 
-batch_size = 128
+batch_size = 64
 max_features = vocab_size + 1
 
 tf.random.set_seed(seed)
@@ -159,7 +159,7 @@ def create_model(max_features):
     model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
     return model
 
-sklearn_lstm = KerasClassifier(build_fn=create_model, epochs=2, batch_size=batch_size, 
+sklearn_lstm = KerasClassifier(build_fn=create_model, epochs=4, batch_size=batch_size, 
                                max_features=max_features, verbose=1)
 
 # Build the Scikit-learn pipeline
@@ -196,7 +196,7 @@ def model_evaluate():
     
 model_evaluate()
 
-idx = 137
+idx = 145
 test_text = np.array(X_test)
 test_class = np.array(y_test)
 text_sample = test_text[idx]
