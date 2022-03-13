@@ -196,7 +196,7 @@ def model_evaluate():
     
 model_evaluate()
 
-idx = 145
+idx = 144
 test_text = np.array(X_test)
 test_class = np.array(y_test)
 text_sample = test_text[idx]
@@ -216,6 +216,14 @@ exp.save_to_file('lime.html')
 exp.as_pyplot_figure()
 
 #removing the word successful from the second sample to see the difference it makes 
+text_sample2 = re.sub('narcissism', ' ', text_sample)
+print(text_sample2)
 
+print('Probability =', pipeline.predict_proba([text_sample2]).round(3))
 
-#print('Probability =', pipeline.predict_proba([text_sample2]).round(3))
+explainer = LimeTextExplainer(class_names=class_names)
+exp = explainer.explain_instance(text_sample2, pipeline.predict_proba, num_features=10, top_labels=2)
+#outputting the explainer as a figure
+exp.show_in_notebook(text=text_sample2)
+exp.save_to_file('lime2.html')
+exp.as_pyplot_figure()

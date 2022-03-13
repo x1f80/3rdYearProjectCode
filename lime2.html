@@ -37089,28 +37089,28 @@
 /***/ })
 /******/ ]);
 //# sourceMappingURL=bundle.js.map </script></head><body>
-        <div class="lime top_div" id="top_divPGZRPE8VQ7WHA50"></div>
+        <div class="lime top_div" id="top_divC81D4WOYUQMO9XV"></div>
         
         <script>
-        var top_div = d3.select('#top_divPGZRPE8VQ7WHA50').classed('lime top_div', true);
+        var top_div = d3.select('#top_divC81D4WOYUQMO9XV').classed('lime top_div', true);
         
             var pp_div = top_div.append('div')
                                 .classed('lime predict_proba', true);
             var pp_svg = pp_div.append('svg').style('width', '100%');
-            var pp = new lime.PredictProba(pp_svg, ["NEITHER", "POSITIVE", "NEGATIVE"], [0.001300392672419548, 0.012601019814610481, 0.9860986471176147]);
+            var pp = new lime.PredictProba(pp_svg, ["NEITHER", "POSITIVE", "NEGATIVE"], [0.002139171352609992, 0.018765214830636978, 0.9790955781936646]);
             
         
         var exp_div;
             var exp = new lime.Explanation(["NEITHER", "POSITIVE", "NEGATIVE"]);
         
                 exp_div = top_div.append('div').classed('lime explanation', true);
-                exp.show([["like", 0.09294527904552422], ["narcissism", 0.06281707084466448], ["self", 0.055705223588799195], ["Its", 0.04556131571648517], ["of", 0.03935741712113445], ["there", 0.03572045032412912], ["lot", 0.031930415732544855], ["SemST", 0.027343391663658092], ["Full", 0.024177336148052075], ["all", -0.021016371347528272]], 2, exp_div);
+                exp.show([["like", 0.1295517671889001], ["self", 0.07246228270825883], ["Its", 0.06402941436457593], ["of", 0.05582670290203735], ["there", 0.053684569448156], ["lot", 0.04515454383555297], ["SemST", 0.04080049434831458], ["Full", 0.03985838844836927], ["women", -0.024032030083918188], ["all", -0.02351544242673666]], 2, exp_div);
                 
                 exp_div = top_div.append('div').classed('lime explanation', true);
-                exp.show([["like", -0.06268890437735496], ["narcissism", -0.03867695054536239], ["Its", -0.03387573465196296], ["self", -0.03364255250725682], ["all", 0.024643390758269337], ["there", -0.02257842221590218], ["of", -0.022547108005378385], ["lot", -0.019015807385900172], ["women", 0.018402057518447243], ["Full", -0.013300479031743289]], 1, exp_div);
+                exp.show([["like", -0.08700329008703936], ["Its", -0.04734291702737868], ["self", -0.04267108977096005], ["there", -0.035294629922255336], ["of", -0.032516387007446704], ["all", 0.02986220305079485], ["lot", -0.02727404619111191], ["women", 0.023719740066770797], ["Full", -0.02110889518579327], ["and", 0.01062407494927037]], 1, exp_div);
                 
         var raw_div = top_div.append('div');
-            exp.show_raw_text([["like", 64, 0.09294527904552422], ["narcissism", 9, 0.06281707084466448], ["self", 24, 0.055705223588799195], ["Its", 75, 0.04556131571648517], ["of", 5, 0.03935741712113445], ["of", 45, 0.03935741712113445], ["there", 58, 0.03572045032412912], ["lot", 41, 0.031930415732544855], ["SemST", 131, 0.027343391663658092], ["Full", 0, 0.024177336148052075], ["all", 87, -0.021016371347528272]], 2, "Full of #narcissism and self-loathing, a lot of women out there like that. Its got sod all to do with #WrightStuff #WolfWhistling #SemST", raw_div, true);
+            exp.show_raw_text([["like", 55, 0.1295517671889001], ["self", 15, 0.07246228270825883], ["Its", 66, 0.06402941436457593], ["of", 5, 0.05582670290203735], ["of", 36, 0.05582670290203735], ["there", 49, 0.053684569448156], ["lot", 32, 0.04515454383555297], ["SemST", 122, 0.04080049434831458], ["Full", 0, 0.03985838844836927], ["women", 39, -0.024032030083918188], ["all", 78, -0.02351544242673666]], 2, "Full of #  and self-loathing, a lot of women out there like that. Its got sod all to do with #WrightStuff #WolfWhistling #SemST", raw_div, true);
             
         </script>
         </body></html>
